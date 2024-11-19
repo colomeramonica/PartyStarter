@@ -6,22 +6,24 @@ import { Image } from "@/components/ui/image";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { Text } from "react-native";
+import { ScrollView } from "react-native";
 
 const CharacterImage = () => (
   <Image
-    className="h-[440px] rounded-md w-[320px]"
+    className="h-[460px] rounded-md w-[320px]"
     source={require('@/assets/images/Jester.jpg')}
   />
 );
 
 const CharacterInfo = () => (
   <Center className="absolute flex items-start justify-start m-5 p-3 top-[300px] w-[320px]">
-    <Text className="color-white font-semibold mt-4 text-2xl">Jester Lavorre</Text>
-    <Text className="color-white mt-1 text-xl">Cleric of the Traveler</Text>
-    <Box className="flex flex-row gap-3 items-center">
-      <Text className="color-white mt-1 text-md">Tiefling</Text>
-      <Text className="color-white mt-1 text-md">Chaotic Neutral</Text>
+    <Text className="color-white font-poppins font-semibold mt-4 text-2xl">Jester Lavorre</Text>
+    <Text className="color-white font-poppins mt-1 text-xl">Cleric</Text>
+    <Box className="flex flex-row gap-3 items-center mt-1">
+      <Text className="bg-slate-400 color-white font-poppins p-1 rounded-full text-sm">Tiefling</Text>
+      <Text className="bg-slate-400 color-white font-poppins p-1 rounded-full text-sm">Chaotic Neutral</Text>
     </Box>
+    <Text className="color-white font-poppins mt-1 text-xs">Associeted with Mighty Nein</Text>
   </Center>
 );
 
@@ -38,7 +40,7 @@ const ActionButtons = () => (
 
 const CharacterDescription = () => (
   <Center className="p-3">
-    <Text>Jester Lavorre is a 5 feet, 3 inches tall blue tiefling with blue hair.
+    <Text className="font-poppins">Jester Lavorre is a 5 feet, 3 inches tall blue tiefling with blue hair.
       She wears a pretty dress and has freckles. She wears a belt with a symbol to the Traveler on her waist.
       Her voice makes her sound younger than she is.
     </Text>
@@ -47,17 +49,19 @@ const CharacterDescription = () => (
 
 export default function Index() {
   return (
-    <Center className="h-full items-center justify-center w-full">
-      <Box className="bg-white flex items-center mt-1 p-3 rounded-xl w-[400px]">
-        <CharacterImage />
-        <CharacterInfo />
-        <Box>
-          <ActionButtons />
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <Center className="h-full items-center justify-center p-3 w-full">
+        <Box className="bg-white flex items-center mt-1 p-3 rounded-xl w-full">
+          <CharacterImage />
+          <CharacterInfo />
+          <Box>
+            <ActionButtons />
+          </Box>
+          <Box>
+            <CharacterDescription />
+          </Box>
         </Box>
-        <Box>
-          <CharacterDescription />
-        </Box>
-      </Box>
-    </Center>
+      </Center>
+    </ScrollView>
   );
 }

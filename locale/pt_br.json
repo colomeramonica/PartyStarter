@@ -44,5 +44,11 @@
     "profile": "Perfil",
     "settings": "Configurações",
     "logout": "Sair"
+  },
+  "button": {
+    "backstory": "Origem",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir"
   }
 }

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallbackText, AvatarImage } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
 import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
 import { Heading } from "@/components/ui/heading";
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { Text } from "@/components/ui/text";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
+import { DicesIcon } from "lucide-react-native";
 
 interface Character {
   name: string;
@@ -35,7 +36,7 @@ interface Character {
 };
 
 const CharacterAvatar = ({ character }: { character: Character }) => (
-  <Avatar size="xl" className="bg-[#4B4376]">
+  <Avatar size="xl" className="bg-[#432E54]">
     <AvatarFallbackText className="text-white">{character.name}</AvatarFallbackText>
     <AvatarImage
       source={{
@@ -48,10 +49,10 @@ const CharacterAvatar = ({ character }: { character: Character }) => (
 const FormField = ({ label, value, onChange }: { label: string, value: string, onChange: (e: any) => void, type?: string }) => (
   <FormControl className="p-2">
     <FormControlLabel>
-      <FormControlLabelText>{label}</FormControlLabelText>
+      <FormControlLabelText className="font-poppins">{label}</FormControlLabelText>
     </FormControlLabel>
     <Input>
-      <InputField type="text" value={value} onChange={onChange} />
+      <InputField type="text" className="font-poppins" value={value} onChange={onChange} />
     </Input>
   </FormControl>
 );
@@ -61,23 +62,33 @@ const CharacterForm = ({ character, handleChange, t }: { character: Character, h
     <FormField label={t('character.name')} value={character.name} onChange={(e) => handleChange("name", e.nativeEvent.text)} />
     <FormControl className="p-2">
       <FormControlLabel>
-        <FormControlLabelText>{t('character.summary')}</FormControlLabelText>
+        <FormControlLabelText className="font-poppins">{t('character.summary')}</FormControlLabelText>
       </FormControlLabel>
       <Textarea>
-        <TextareaInput type="text" value={character.description} onChange={(e) => handleChange("description", e.nativeEvent.text)} />
+        <TextareaInput
+          type="text"
+          value={character.description}
+          className="font-poppins"
+          onChange={(e) => handleChange("description", e.nativeEvent.text)} />
       </Textarea>
     </FormControl>
-    <FormField label={t('character.class')} value={character.class} onChange={(e) => handleChange("class", e.nativeEvent.text)} />
-    <FormField label={t('character.race')} value={character.race} onChange={(e) => handleChange("race", e.nativeEvent.text)} />
+    <FormField
+      label={t('character.class')}
+      value={character.class}
+      onChange={(e) => handleChange("class", e.nativeEvent.text)} />
+    <FormField
+      label={t('character.race')}
+      value={character.race}
+      onChange={(e) => handleChange("race", e.nativeEvent.text)} />
   </VStack>
 );
 
 const CharacterSheet = ({ character, handleChange, t }: { character: Character, handleChange: (field: string, value: string) => void, t: (key: string) => string }) => {
   const statusFields: (keyof Character['status'])[] = ["str", "dex", "con", "int", "wis", "cha"];
   return (
-    <Box className="flex items-start justify-start p-3">
+    <Box className="flex items-start justify-start ml-4 p-3">
       <Heading size="md" className="font-poppins">{t('sections.sheet')}</Heading>
-      <Box className="flex flex-col gap-2 items-start justify-around p-4 sm:flex-row w-full">
+      <Box className="flex flex-col gap-2 items-center justify-around p-4 sm:flex-row w-full">
         {statusFields.map((field) => (
           <Box key={field} className="flex flex-col items-center">
             <Text className="font-poppins">{field.toUpperCase()}</Text>
@@ -91,6 +102,9 @@ const CharacterSheet = ({ character, handleChange, t }: { character: Character, 
             </Input>
           </Box>
         ))}
+        <Button size="xl" className="p-3 rounded-full">
+          <DicesIcon className="hover:animate-bounce" />
+        </Button>
       </Box>
     </Box>
   );
@@ -162,14 +176,16 @@ export default function Profile() {
           <Box className="flex justify-start w-full">
             <CharacterForm character={character} handleChange={handleChange} t={t} />
             <CharacterSheet character={character} handleChange={handleChange} t={t} />
-            <Button size="md" variant="link" action="primary" onPress={() => setShowModal(true)}>
-              <ButtonText>{t('button.backstory')}</ButtonText>
+          </Box>
+          <Box className="flex items-start justify-start ml-4 p-4 w-full">
+            <Button size="md" variant="solid" action="primary" onPress={() => setShowModal(true)}>
+              <ButtonText className="underline">{t('button.backstory')}</ButtonText>
             </Button>
           </Box>
         </Box>
       </Center>
       <Center className="flex flex-row h-full justify-end p-3 rounded-xl w-full">
-        <Button size="md" variant="solid" action="primary">
+        <Button className="bg-[#432E54] color-white" size="md" variant="solid" action="primary">
           <ButtonText>{t('button.save')}</ButtonText>
         </Button>
       </Center>

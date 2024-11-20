@@ -11,7 +11,7 @@ import { ScrollView } from "react-native";
 const CharacterImage = () => (
   <Image
     className="h-[460px] rounded-md w-[320px]"
-    source={require('@/assets/images/Jester.jpg')}
+    source={require('@/assets/images/jester.jpg')}
   />
 );
 

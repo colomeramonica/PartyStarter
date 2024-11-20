@@ -5,14 +5,17 @@ import { Center } from "@/components/ui/center";
 import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { ChevronDownIcon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
+import { ChevronDownIcon, CircleIcon, CloseIcon, Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from "@/components/ui/select";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { VStack } from "@/components/ui/vstack";
 import { useCallback, useState } from "react";
 import { ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import '@/i18n';
+import { Text } from "@/components/ui/text";
+import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
 
 interface Character {
   name: string;
@@ -21,180 +24,134 @@ interface Character {
   alignment: string;
   description: string;
   affiliation: string;
+  status: {
+    str: string;
+    dex: string;
+    con: string;
+    int: string;
+    wis: string;
+    cha: string;
+  };
 };
 
 const CharacterAvatar = ({ character }: { character: Character }) => (
-  <Avatar size="xl">
-    <AvatarFallbackText>{character.name}</AvatarFallbackText>
+  <Avatar size="xl" className="bg-[#4B4376]">
+    <AvatarFallbackText className="text-white">{character.name}</AvatarFallbackText>
     <AvatarImage
       source={{
-        uri: require('../../assets/images/Jester.jpg'),
+        uri: require('@/assets/images/jester.jpg'),
       }}
     />
   </Avatar>
 );
 
-const CharacterForm = ({ character, handleChange }: { character: Character, handleChange: (field: string, value: string) => void }) => (
+const FormField = ({ label, value, onChange }: { label: string, value: string, onChange: (e: any) => void, type?: string }) => (
+  <FormControl className="p-2">
+    <FormControlLabel>
+      <FormControlLabelText>{label}</FormControlLabelText>
+    </FormControlLabel>
+    <Input>
+      <InputField type="text" value={value} onChange={onChange} />
+    </Input>
+  </FormControl>
+);
+
+const CharacterForm = ({ character, handleChange, t }: { character: Character, handleChange: (field: string, value: string) => void, t: (key: string) => string }) => (
   <VStack className="p-4 rounded-md w-full">
-    <FormControl
-      isInvalid={false}
-      size="md"
-      isDisabled={false}
-      isReadOnly={false}
-      isRequired={false}
-      className="p-2"
-    >
+    <FormField label={t('character.name')} value={character.name} onChange={(e) => handleChange("name", e.nativeEvent.text)} />
+    <FormControl className="p-2">
       <FormControlLabel>
-        <FormControlLabelText>Character Name</FormControlLabelText>
-      </FormControlLabel>
-      <Input>
-        <InputField
-          type="text"
-          value={character.name}
-          onChange={(e) => handleChange("name", e.nativeEvent.text)}
-        />
-      </Input>
-    </FormControl>
-    <FormControl
-      isInvalid={false}
-      size="md"
-      isDisabled={false}
-      isReadOnly={false}
-      isRequired={false}
-      className="p-2"
-    >
-      <FormControlLabel>
-        <FormControlLabelText>Character Description</FormControlLabelText>
+        <FormControlLabelText>{t('character.summary')}</FormControlLabelText>
       </FormControlLabel>
       <Textarea>
-        <TextareaInput
-          type="text"
-          value={character.description}
-          onChange={(e) => handleChange("description", e.nativeEvent.text)}
-        />
+        <TextareaInput type="text" value={character.description} onChange={(e) => handleChange("description", e.nativeEvent.text)} />
       </Textarea>
     </FormControl>
-    <FormControl
-      isInvalid={false}
-      size="md"
-      isDisabled={false}
-      isReadOnly={false}
-      isRequired={false}
-      className="p-2"
-    >
-      <FormControlLabel>
-        <FormControlLabelText>Character Class</FormControlLabelText>
-      </FormControlLabel>
-      <Select onValueChange={(e) => handleChange("class", e)}>
-        <SelectTrigger variant="outline" size="md">
-          <SelectInput className="font-poppins" placeholder="Select option" />
-          <SelectIcon className="mr-5" as={ChevronDownIcon} />
-        </SelectTrigger>
-        <SelectPortal>
-          <SelectBackdrop />
-          <SelectContent>
-            <SelectDragIndicatorWrapper>
-              <SelectDragIndicator />
-            </SelectDragIndicatorWrapper>
-            <SelectItem className="font-poppins" label="UX Research" value="ux" />
-          </SelectContent>
-        </SelectPortal>
-      </Select>
-    </FormControl>
-    <FormControl
-      isInvalid={false}
-      size="md"
-      isDisabled={false}
-      isReadOnly={false}
-      isRequired={false}
-      className="p-2"
-    >
-      <FormControlLabel>
-        <FormControlLabelText>Character Race</FormControlLabelText>
-      </FormControlLabel>
-      <Select onValueChange={(e) => handleChange("race", e)}>
-        <SelectTrigger variant="outline" size="md">
-          <SelectInput className="font-poppins" placeholder="Select option" />
-          <SelectIcon className="mr-5" as={ChevronDownIcon} />
-        </SelectTrigger>
-        <SelectPortal>
-          <SelectBackdrop />
-          <SelectContent>
-            <SelectDragIndicatorWrapper>
-              <SelectDragIndicator />
-            </SelectDragIndicatorWrapper>
-            <SelectItem className="font-poppins" label="UX Research" value="ux" />
-          </SelectContent>
-        </SelectPortal>
-      </Select>
-    </FormControl>
+    <FormField label={t('character.class')} value={character.class} onChange={(e) => handleChange("class", e.nativeEvent.text)} />
+    <FormField label={t('character.race')} value={character.race} onChange={(e) => handleChange("race", e.nativeEvent.text)} />
   </VStack>
 );
 
-const PhotoGallery = ({ handleUpload }: { handleUpload: (event: React.ChangeEvent<HTMLInputElement>) => void }) => (
-  <Box className="flex items-center justify-center">
-    <Heading className="font-poppins mt-3 text-xl">Photo Gallery</Heading>
-    <HStack space="md" reversed={false} className="duration-300 hover:opacity-75 mt-2 transition-opacity">
-      <label htmlFor="upload-photo">
-        <Image
-          size="md"
-          source={{
-            uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          }}
-          alt="image"
-          className="cursor-pointer rounded-md"
-        />
-      </label>
-      <input
-        id="upload-photo"
-        type="file"
-        onChange={handleUpload}
-        style={{ display: 'none' }}
-        name="photos"
-      />
-    </HStack>
-  </Box>
-);
+const CharacterSheet = ({ character, handleChange, t }: { character: Character, handleChange: (field: string, value: string) => void, t: (key: string) => string }) => {
+  const statusFields: (keyof Character['status'])[] = ["str", "dex", "con", "int", "wis", "cha"];
+  return (
+    <Box className="flex items-start justify-start p-3">
+      <Heading size="md" className="font-poppins">{t('sections.sheet')}</Heading>
+      <Box className="flex flex-col gap-2 items-start justify-around p-4 sm:flex-row w-full">
+        {statusFields.map((field) => (
+          <Box key={field} className="flex flex-col items-center">
+            <Text className="font-poppins">{field.toUpperCase()}</Text>
+            <Input>
+              <InputField
+                type="text"
+                value={character.status[field]}
+                onChange={(e) => handleChange(field, e.nativeEvent.text)}
+                className="font-poppins max-w-[42px] w-fit"
+              />
+            </Input>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
+const BackstoryModal = ({ t, showModal, onClose, handleChange }: { t: (key: string) => string, showModal: boolean, onClose: () => void, handleChange: (field: string, value: string) => void }) => {
+  return (
+    <Modal isOpen={showModal} onClose={onClose} size="md">
+      <ModalBackdrop />
+      <ModalContent>
+        <ModalHeader>
+          <Heading size="md" className="font-poppins text-typography-950">
+            {t('modal.createBackstory')}
+          </Heading>
+          <ModalCloseButton>
+            <Icon as={CloseIcon} size="md" className="group-[:active]/modal-close-button:stroke-background-900 group-[:focus-visible]/modal-close-button:stroke-background-900 group-[:hover]/modal-close-button:stroke-background-700 stroke-background-400" />
+          </ModalCloseButton>
+        </ModalHeader>
+        <ModalBody>
+          <VStack className="p-4 rounded-md w-full">
+            <FormField label={t('modal.personalityTraits')} value="Bla bla" onChange={(e) => handleChange("personalityTraits", e.nativeEvent.text)} />
+            <FormField label={t('modal.ideals')} value="Bla bla" onChange={(e) => handleChange("ideals", e.nativeEvent.text)} />
+            <FormField label={t('modal.bonds')} value="Bla bla" onChange={(e) => handleChange("bonds", e.nativeEvent.text)} />
+            <FormField label={t('modal.flaws')} value="Bla bla" onChange={(e) => handleChange("flaws", e.nativeEvent.text)} />
+          </VStack>
+          <Text>Test?</Text>
+        </ModalBody>
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const initialCharacter: Character = {
+  name: "Jester Lavorre",
+  class: "Cleric",
+  race: "Tiefling",
+  alignment: "Chaotic good",
+  description: "Jester Lavorre is a blue tiefling with blue hair. She has a mischievous smile and a penchant for pranks. She is a cleric of the Traveler, a deity of chaos and trickery. Jester is a member of the Mighty Nein, a group of adventurers who travel the world in search of treasure and glory.",
+  affiliation: "",
+  status: {
+    str: "14",
+    dex: "14",
+    con: "14",
+    int: "14",
+    wis: "14",
+    cha: "14",
+  },
+};
 
 export default function Profile() {
-  const [character, setCharacter] = useState<Character>({
-    name: "Jester Lavorre",
-    class: "Cleric",
-    race: "Tiefling",
-    alignment: "Chaotic good",
-    description: "Jester Lavorre is a blue tiefling with blue hair. She has a mischievous smile and a penchant for pranks. She is a cleric of the Traveler, a deity of chaos and trickery. Jester is a member of the Mighty Nein, a group of adventurers who travel the world in search of treasure and glory.",
-    affiliation: "",
-  });
+  const { t } = useTranslation();
+  const [showModal, setShowModal] = useState(false);
+  const [character, setCharacter] = useState<Character>(initialCharacter);
 
   const handleChange = useCallback((field: string, value: string) => {
-    setCharacter((prevCharacter: Character) => ({
+    setCharacter((prevCharacter) => ({
       ...prevCharacter,
       [field]: value,
+      status: field in prevCharacter.status ? { ...prevCharacter.status, [field]: value } : prevCharacter.status,
     }));
-  }, []);
-
-  const handleUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    // const file = event.target.files?.[0];
-    // if (file) {
-    //   const storageRef  = ref(storage, `images/${file.name}`);
-    //   const uploadTask = uploadBytesResumable(storageRef, file);
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapshot: any) => {
-    //       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //       console.log("Upload is " + progress + "% done");
-    //     },
-    //     (error: any) => {
-    //       console.error("Upload error:", error);
-    //     },
-    //     () => {
-    //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL: string) => {
-    //         console.log('File available at', downloadURL);
-    //       setImage(downloadURL);
-    //       });
-    //     }
-    //   );
-    // }
   }, []);
 
   return (
@@ -203,16 +160,25 @@ export default function Profile() {
         <Box className="bg-white flex items-center mt-1 p-3 rounded-xl w-full">
           <CharacterAvatar character={character} />
           <Box className="flex justify-start w-full">
-            <CharacterForm character={character} handleChange={handleChange} />
-            <PhotoGallery handleUpload={handleUpload} />
+            <CharacterForm character={character} handleChange={handleChange} t={t} />
+            <CharacterSheet character={character} handleChange={handleChange} t={t} />
+            <Button size="md" variant="link" action="primary" onPress={() => setShowModal(true)}>
+              <ButtonText>{t('button.backstory')}</ButtonText>
+            </Button>
           </Box>
         </Box>
       </Center>
       <Center className="flex flex-row h-full justify-end p-3 rounded-xl w-full">
         <Button size="md" variant="solid" action="primary">
-          <ButtonText>Save</ButtonText>
+          <ButtonText>{t('button.save')}</ButtonText>
         </Button>
       </Center>
+      <BackstoryModal
+        t={t}
+        showModal={showModal}
+        onClose={() => setShowModal(false)}
+        handleChange={handleChange}
+      />
     </ScrollView>
-  )
-};
+  );
+}

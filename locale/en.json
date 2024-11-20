@@ -1,0 +1,42 @@
+{
+  "character": {
+    "character": "Character",
+    "list": "List of Characters",
+    "create": "Create Character",
+    "change": "Change Character",
+    "name": "Name of the Character",
+    "level": "Level of the Character",
+    "class": "Class of the Character",
+    "race": "Race of the Character",
+    "summary": "Character Summary",
+    "alignment": "Alignment"
+  },
+  "status": {
+    "strength": "Strength",
+    "dexterity": "Dexterity",
+    "constitution": "Constitution",
+    "intelligence": "Intelligence",
+    "wisdom": "Wisdom",
+    "charisma": "Charisma"
+  },
+  "actions": {
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "created": "Character created successfully",
+    "updated": "Character updated successfully",
+    "deleted": "Character deleted successfully",
+    "confirm": "Are you sure you want to delete this character?",
+    "yes": "Yes",
+    "no": "No",
+    "notFound": "Character not found"
+  },
+  "sections": {
+    "sheet": "Character Sheet",
+    "photo_gallery": "Photo Gallery"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "character": {
+    "character": "Personagem",
+    "list": "Lista de Personagens",
+    "create": "Criar Personagem",
+    "change": "Alterar Personagem",
+    "name": "Nome do Personagem",
+    "level": "Nível do Personagem",
+    "class": "Classe do Personagem",
+    "race": "Raça do Personagem",
+    "summary": "Resumo do Personagem",
+    "alignment": "Alinhamento"
+  },
+  "status": {
+    "strength": "Força",
+    "dexterity": "Destreza",
+    "constitution": "Constituição",
+    "intelligence": "Inteligência",
+    "wisdom": "Sabedoria",
+    "charisma": "Carisma"
+  },
+  "actions": {
+    "create": "Criar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "save": "Salvar",
+    "cancel": "Cancelar"
+  },
+  "messages": {
+    "created": "Personagem criado com sucesso",
+    "updated": "Personagem atualizado com sucesso",
+    "deleted": "Personagem excluído com sucesso",
+    "confirm": "Você tem certeza que deseja excluir este personagem?",
+    "yes": "Sim",
+    "no": "Não",
+    "notFound": "Personagem não encontrado"
+  },
+  "sections": {
+    "sheet": "Ficha de Personagem",
+    "photo_gallery": "Galeria de Fotos"
+  },
+  "pages": {
+    "home": "Início",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
+  }
+}

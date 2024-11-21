@@ -11,7 +11,7 @@ import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragI
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { VStack } from "@/components/ui/vstack";
 import { useCallback, useState } from "react";
-import { ScrollView } from 'react-native';
+import { ScrollView, TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { Text } from "@/components/ui/text";
@@ -83,7 +83,7 @@ const CharacterForm = ({ character, handleChange, t }: { character: Character, h
   </VStack>
 );
 
-const CharacterSheet = ({ character, handleChange, t }: { character: Character, handleChange: (field: string, value: string) => void, t: (key: string) => string }) => {
+const CharacterSheet = ({ character, handleChange, rollDice, t }: { character: Character, handleChange: (field: string, value: string) => void, rollDice: () => void, t: (key: string) => string }) => {
   const statusFields: (keyof Character['status'])[] = ["str", "dex", "con", "int", "wis", "cha"];
   return (
     <Box className="flex items-start justify-start ml-4 p-3">
@@ -102,8 +102,8 @@ const CharacterSheet = ({ character, handleChange, t }: { character: Character, 
             </Input>
           </Box>
         ))}
-        <Button size="xl" className="p-3 rounded-full">
-          <DicesIcon className="hover:animate-bounce" />
+        <Button className="p-3 rounded-full" onPress={rollDice}>
+          <DicesIcon />
         </Button>
       </Box>
     </Box>
@@ -125,12 +125,11 @@ const BackstoryModal = ({ t, showModal, onClose, handleChange }: { t: (key: stri
         </ModalHeader>
         <ModalBody>
           <VStack className="p-4 rounded-md w-full">
-            <FormField label={t('modal.personalityTraits')} value="Bla bla" onChange={(e) => handleChange("personalityTraits", e.nativeEvent.text)} />
-            <FormField label={t('modal.ideals')} value="Bla bla" onChange={(e) => handleChange("ideals", e.nativeEvent.text)} />
-            <FormField label={t('modal.bonds')} value="Bla bla" onChange={(e) => handleChange("bonds", e.nativeEvent.text)} />
-            <FormField label={t('modal.flaws')} value="Bla bla" onChange={(e) => handleChange("flaws", e.nativeEvent.text)} />
+            <FormField label={t('modal.personalityTraits')} value="" onChange={(e) => handleChange("personalityTraits", e.nativeEvent.text)} />
+            <FormField label={t('modal.ideals')} value="" onChange={(e) => handleChange("ideals", e.nativeEvent.text)} />
+            <FormField label={t('modal.bonds')} value="" onChange={(e) => handleChange("bonds", e.nativeEvent.text)} />
+            <FormField label={t('modal.flaws')} value="" onChange={(e) => handleChange("flaws", e.nativeEvent.text)} />
           </VStack>
-          <Text>Test?</Text>
         </ModalBody>
         <ModalFooter />
       </ModalContent>
@@ -146,12 +145,12 @@ const initialCharacter: Character = {
   description: "Jester Lavorre is a blue tiefling with blue hair. She has a mischievous smile and a penchant for pranks. She is a cleric of the Traveler, a deity of chaos and trickery. Jester is a member of the Mighty Nein, a group of adventurers who travel the world in search of treasure and glory.",
   affiliation: "",
   status: {
-    str: "14",
-    dex: "14",
-    con: "14",
-    int: "14",
-    wis: "14",
-    cha: "14",
+    str: "",
+    dex: "",
+    con: "",
+    int: "",
+    wis: "",
+    cha: "",
   },
 };
 
@@ -168,6 +167,38 @@ export default function Profile() {
     }));
   }, []);
 
+  const rollDice = () => {
+    const getRandomStat = () => Math.floor(Math.random() * 11) + 8;
+    let stats = Array(6).fill(0);
+    let sum = 0;
+
+    let iterations = 0;
+    const maxIterations = 1000;
+    while (sum !== 27 && iterations < maxIterations) {
+      iterations++;
+      sum = 0;
+      stats = stats.map(() => {
+        const stat = getRandomStat();
+        sum += stat;
+        return stat;
+      });
+    }
+
+    const newStatus = {
+      str: stats[0].toString(),
+      dex: stats[1].toString(),
+      con: stats[2].toString(),
+      int: stats[3].toString(),
+      wis: stats[4].toString(),
+      cha: stats[5].toString(),
+    };
+
+    setCharacter((prevCharacter) => ({
+      ...prevCharacter,
+      status: newStatus,
+    }));
+  };
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <Center className="h-full justify-start p-3 w-full">
@@ -175,17 +206,19 @@ export default function Profile() {
           <CharacterAvatar character={character} />
           <Box className="flex justify-start w-full">
             <CharacterForm character={character} handleChange={handleChange} t={t} />
-            <CharacterSheet character={character} handleChange={handleChange} t={t} />
+            <CharacterSheet character={character} handleChange={handleChange} rollDice={rollDice} t={t} />
           </Box>
           <Box className="flex items-start justify-start ml-4 p-4 w-full">
             <Button size="md" variant="solid" action="primary" onPress={() => setShowModal(true)}>
               <ButtonText className="underline">{t('button.backstory')}</ButtonText>
             </Button>
           </Box>
+          <Box className="flex items-start justify-start ml-4 p-4 w-full">
+          </Box>
         </Box>
       </Center>
       <Center className="flex flex-row h-full justify-end p-3 rounded-xl w-full">
-        <Button className="bg-[#432E54] color-white" size="md" variant="solid" action="primary">
+        <Button className="bg-[#432E54] color-white" size="md" variant="solid" action="primary" onPress={() => {/* Save action here */ }}>
           <ButtonText>{t('button.save')}</ButtonText>
         </Button>
       </Center>

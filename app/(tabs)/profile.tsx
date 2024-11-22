@@ -2,7 +2,7 @@ import { Avatar, AvatarFallbackText, AvatarImage } from "@/components/ui/avatar"
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
-import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { ChevronDownIcon, CircleIcon, CloseIcon, Icon } from "@/components/ui/icon";
@@ -10,13 +10,13 @@ import { Input, InputField } from "@/components/ui/input";
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from "@/components/ui/select";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { VStack } from "@/components/ui/vstack";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { ScrollView, TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { Text } from "@/components/ui/text";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
-import { DicesIcon } from "lucide-react-native";
+import { AlertCircleIcon, DicesIcon } from "lucide-react-native";
 import { fetchRaces, fetchClasses } from '@/utils/api';
 
 interface Character {
@@ -35,8 +35,6 @@ interface Character {
     cha: string;
   };
 };
-
-const classes = await fetchClasses();
 
 const CharacterAvatar = ({ character }: { character: Character }) => (
   <Avatar size="xl" className="bg-[#432E54]">
@@ -60,46 +58,68 @@ const FormField = ({ label, value, onChange }: { label: string, value: string, o
   </FormControl>
 );
 
-const CharacterForm = ({ character, handleChange, t }: { character: Character, handleChange: (field: string, value: string) => void, t: (key: string) => string }) => (
-  <VStack className="p-4 rounded-md w-full">
-    <FormField label={t('character.name')} value={character.name} onChange={(e) => handleChange("name", e.nativeEvent.text)} />
-    <FormControl className="p-2">
-      <FormControlLabel>
-        <FormControlLabelText className="font-poppins">{t('character.summary')}</FormControlLabelText>
-      </FormControlLabel>
-      <Textarea>
-        <TextareaInput
-          type="text"
-          value={character.description}
-          className="font-poppins"
-          onChange={(e) => handleChange("description", e.nativeEvent.text)} />
-      </Textarea>
-    </FormControl>
-    <Select>
-      <SelectTrigger variant="outline" size="md">
-        <SelectInput placeholder="Select option" />
-        <SelectIcon className="mr-3" as={ChevronDownIcon} />
-      </SelectTrigger>
-      <SelectPortal>
-        <SelectBackdrop />
-        <SelectContent>
-          <SelectDragIndicatorWrapper>
-            <SelectDragIndicator />
-          </SelectDragIndicatorWrapper>
-          {classes.map((item) => (
-            <TouchableHighlight key={item.name} onPress={() => handleChange("class", item.name)}>
-              <SelectItem label={item.name} value={item.name}>{item.name}</SelectItem>
-            </TouchableHighlight>
-          ))}
-        </SelectContent>
-      </SelectPortal>
-    </Select>
-    <FormField
-      label={t('character.race')}
-      value={character.race}
-      onChange={(e) => handleChange("race", e.nativeEvent.text)} />
-  </VStack>
-);
+const CharacterForm = ({ character, handleChange, t }: { character: Character, handleChange: (field: string, value: string) => void, t: (key: string) => string }) => {
+  const [classes, setClasses] = useState<{ name: string; description: string }[]>([]);
+
+  useEffect(() => {
+    const fetchClassesData = async () => {
+      const classesData = await fetchClasses();
+      setClasses(classesData);
+    };
+
+    fetchClassesData();
+  }, []);
+
+  return (
+    <VStack className="p-4 rounded-md w-full">
+      <FormField label={t('character.name')} value={character.name} onChange={(e) => handleChange("name", e.nativeEvent.text)} />
+      <FormControl className="p-2">
+        <FormControlLabel>
+          <FormControlLabelText className="font-poppins">{t('character.summary')}</FormControlLabelText>
+        </FormControlLabel>
+        <Textarea>
+          <TextareaInput
+            type="text"
+            value={character.description}
+            className="font-poppins"
+            onChange={(e) => handleChange("description", e.nativeEvent.text)} />
+        </Textarea>
+      </FormControl>
+      <FormControl className="p-2">
+        <FormControlLabel>
+          <FormControlLabelText className="font-poppins">{t('character.class')}</FormControlLabelText>
+        </FormControlLabel>
+        <Select>
+          <SelectTrigger variant="outline" size="md">
+            <SelectInput placeholder="Select option" />
+            <SelectIcon className="mr-3" as={ChevronDownIcon} />
+          </SelectTrigger>
+          <SelectPortal>
+            <SelectBackdrop />
+            <SelectContent>
+              <SelectDragIndicatorWrapper>
+                <SelectDragIndicator />
+              </SelectDragIndicatorWrapper>
+              {classes.map((item) => (
+                <SelectItem
+                  label={item.name}
+                  value={item.name}
+                  key={item.name}
+                  className="font-poppins">
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </SelectPortal>
+        </Select>
+      </FormControl>
+      <FormField
+        label={t('character.race')}
+        value={character.race}
+        onChange={(e) => handleChange("race", e.nativeEvent.text)} />
+    </VStack>
+  );
+};
 
 const CharacterSheet = ({ character, handleChange, rollDice, t }: { character: Character, handleChange: (field: string, value: string) => void, rollDice: () => void, t: (key: string) => string }) => {
   const statusFields: (keyof Character['status'])[] = ["str", "dex", "con", "int", "wis", "cha"];
@@ -109,22 +129,35 @@ const CharacterSheet = ({ character, handleChange, rollDice, t }: { character: C
       <Box className="flex flex-col gap-2 items-center justify-around p-4 sm:flex-row w-full">
         {statusFields.map((field) => (
           <Box key={field} className="flex flex-col items-center">
-            <Text className="font-poppins">{field.toUpperCase()}</Text>
-            <Input>
-              <InputField
-                type="text"
-                value={character.status[field]}
-                onChange={(e) => handleChange(field, e.nativeEvent.text)}
-                className="font-poppins max-w-[42px] w-fit"
-              />
-            </Input>
+            <FormControl className="p-2">
+              <FormControlLabel className="font-poppins">{field.toUpperCase()}</FormControlLabel>
+              <Input>
+                <InputField
+                  type="text"
+                  value={character.status[field]}
+                  onChange={(e) => handleChange(field, e.nativeEvent.text)}
+                  className="font-poppins max-w-[42px] w-fit"
+                />
+              </Input>
+            </FormControl>
+            <FormControlHelper>
+              <FormControlHelperText>
+                Must be a number between 8 and 18.
+              </FormControlHelperText>
+            </FormControlHelper>
+            <FormControlError>
+              <FormControlErrorIcon as={AlertCircleIcon} />
+              <FormControlErrorText>
+                Must be a number between 8 and 18.
+              </FormControlErrorText>
+            </FormControlError>
           </Box>
         ))}
         <Button className="p-3 rounded-full" onPress={rollDice}>
           <DicesIcon />
         </Button>
       </Box>
-    </Box>
+    </Box >
   );
 };
 
@@ -178,10 +211,11 @@ export default function Profile() {
   const [character, setCharacter] = useState<Character>(initialCharacter);
 
   const handleChange = useCallback((field: string, value: string) => {
+    const numericValue = /^[0-9]{1,2}$/.test(value) ? value : '';
     setCharacter((prevCharacter) => ({
       ...prevCharacter,
       [field]: value,
-      status: field in prevCharacter.status ? { ...prevCharacter.status, [field]: value } : prevCharacter.status,
+      status: field in prevCharacter.status ? { ...prevCharacter.status, [field]: numericValue } : prevCharacter.status,
     }));
   }, []);
 
@@ -225,7 +259,6 @@ export default function Profile() {
         character.race,
         character.alignment,
         character.description,
-        character.affiliation,
         JSON.stringify(character.status),
       ]);
       alert('Character saved successfully!');

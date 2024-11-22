@@ -17,6 +17,7 @@ import '@/i18n';
 import { Text } from "@/components/ui/text";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { DicesIcon } from "lucide-react-native";
+import { fetchRaces, fetchClasses } from '@/utils/api';
 
 interface Character {
   name: string;
@@ -34,6 +35,8 @@ interface Character {
     cha: string;
   };
 };
+
+const classes = await fetchClasses();
 
 const CharacterAvatar = ({ character }: { character: Character }) => (
   <Avatar size="xl" className="bg-[#432E54]">
@@ -72,10 +75,25 @@ const CharacterForm = ({ character, handleChange, t }: { character: Character, h
           onChange={(e) => handleChange("description", e.nativeEvent.text)} />
       </Textarea>
     </FormControl>
-    <FormField
-      label={t('character.class')}
-      value={character.class}
-      onChange={(e) => handleChange("class", e.nativeEvent.text)} />
+    <Select>
+      <SelectTrigger variant="outline" size="md">
+        <SelectInput placeholder="Select option" />
+        <SelectIcon className="mr-3" as={ChevronDownIcon} />
+      </SelectTrigger>
+      <SelectPortal>
+        <SelectBackdrop />
+        <SelectContent>
+          <SelectDragIndicatorWrapper>
+            <SelectDragIndicator />
+          </SelectDragIndicatorWrapper>
+          {classes.map((item) => (
+            <TouchableHighlight key={item.name} onPress={() => handleChange("class", item.name)}>
+              <SelectItem label={item.name} value={item.name}>{item.name}</SelectItem>
+            </TouchableHighlight>
+          ))}
+        </SelectContent>
+      </SelectPortal>
+    </Select>
     <FormField
       label={t('character.race')}
       value={character.race}
@@ -199,6 +217,24 @@ export default function Profile() {
     }));
   };
 
+  const saveCharacter = async () => {
+    try {
+      await query('INSERT INTO characters (name, class, race, alignment, description, affiliation, status) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
+        character.name,
+        character.class,
+        character.race,
+        character.alignment,
+        character.description,
+        character.affiliation,
+        JSON.stringify(character.status),
+      ]);
+      alert('Character saved successfully!');
+    } catch (error) {
+      console.error('Error saving character:', error);
+      alert('Failed to save character.');
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <Center className="h-full justify-start p-3 w-full">
@@ -218,7 +254,7 @@ export default function Profile() {
         </Box>
       </Center>
       <Center className="flex flex-row h-full justify-end p-3 rounded-xl w-full">
-        <Button className="bg-[#432E54] color-white" size="md" variant="solid" action="primary" onPress={() => {/* Save action here */ }}>
+        <Button className="bg-[#432E54] color-white" size="md" variant="solid" action="primary" onPress={saveCharacter}>
           <ButtonText>{t('button.save')}</ButtonText>
         </Button>
       </Center>

@@ -129,28 +129,15 @@ const CharacterSheet = ({ character, handleChange, rollDice, t }: { character: C
       <Box className="flex flex-col gap-2 items-center justify-around p-4 sm:flex-row w-full">
         {statusFields.map((field) => (
           <Box key={field} className="flex flex-col items-center">
-            <FormControl className="p-2">
-              <FormControlLabel className="font-poppins">{field.toUpperCase()}</FormControlLabel>
-              <Input>
-                <InputField
-                  type="text"
-                  value={character.status[field]}
-                  onChange={(e) => handleChange(field, e.nativeEvent.text)}
-                  className="font-poppins max-w-[42px] w-fit"
-                />
-              </Input>
-            </FormControl>
-            <FormControlHelper>
-              <FormControlHelperText>
-                Must be a number between 8 and 18.
-              </FormControlHelperText>
-            </FormControlHelper>
-            <FormControlError>
-              <FormControlErrorIcon as={AlertCircleIcon} />
-              <FormControlErrorText>
-                Must be a number between 8 and 18.
-              </FormControlErrorText>
-            </FormControlError>
+            <Text className="font-poppins">{field.toUpperCase()}</Text>
+            <Input>
+              <InputField
+                type="text"
+                value={character.status[field]}
+                onChange={(e) => handleChange(field, e.nativeEvent.text)}
+                className="font-poppins max-w-[42px] w-fit"
+              />
+            </Input>
           </Box>
         ))}
         <Button className="p-3 rounded-full" onPress={rollDice}>

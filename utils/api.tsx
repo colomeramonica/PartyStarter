@@ -1,5 +1,12 @@
 import { supabase } from '@/utils/supabase';
 
+export async function saveUser(user: { [key: string]: any }) {
+  const { data, error } = await supabase.from('users').insert([user]);
+  if (error) {
+    throw error;
+  }
+  return data;
+}
 export async function fetchCharacters() {
   let { data: characters, error } = await supabase
     .from('characters')
@@ -46,12 +53,12 @@ export async function createCharacter(char: { [key: string]: any }) {
         user_id: char.user_id,
         race: char.race,
         class: char.class,
-        strength: char.strength,
-        dexterity: char.dexterity,
-        constitution: char.constitution,
-        intelligence: char.intelligence,
-        wisdom: char.wisdom,
-        charisma: char.charisma,
+        strength: char.str,
+        dexterity: char.dex,
+        constitution: char.con,
+        intelligence: char.int,
+        wisdom: char.wis,
+        charisma: char.char,
       },
     ])
     .select()

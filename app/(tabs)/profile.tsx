@@ -10,41 +10,25 @@ import CharacterForm from "../components/CharacterForm";
 import CharacterSheet from "../components/CharacterSheet";
 import { useCharacterState } from "../utils/store";
 import BackstoryModal from "../components/BackstoryModal";
+import WelcomeDialog from "../components/WelcomeDialog";
+import { createCharacter } from "@/utils/api";
 
 export default function Profile() {
   const { t } = useTranslation();
 
-  const initialCharacter = {
-    name: '',
-    description: '',
-    class: '',
-    race: '',
-    alignment: '',
-    background: '',
-    flaws: '',
-    bonds: '',
-    ideals: '',
-    str: '',
-    dex: '',
-    con: '',
-    int: '',
-    wis: '',
-    cha: ''
-  };
-
   const character = useCharacterState((state) => state.character);
   const setCharacter = useCharacterState((state) => state.setCharacter);
-
-  const handleChange = useCallback((key: any, value: any) => {
-    setCharacter({
-      ...character,
-      [key]: value,
-    });
-  }, [character, setCharacter]);
   const [showModal, setShowModal] = useState(false);
+
+  const handleSave = async () => {
+    await createCharacter(character);
+  }
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      {!character && (
+        <WelcomeDialog />
+      )}
       <Center className="h-full justify-start p-3 w-full">
         <Box className="bg-white flex items-center mt-1 p-3 rounded-xl w-full">
           {character && <CharacterAvatar />}
@@ -62,7 +46,12 @@ export default function Profile() {
         </Box>
       </Center>
       <Center className="flex flex-row h-full justify-end p-3 rounded-xl w-full">
-        <Button className="bg-[#432E54] color-white" size="md" variant="solid" action="primary" onPress={() => {/* Save action here */ }}>
+        <Button
+          className="bg-[#432E54] color-white"
+          size="md"
+          variant="solid"
+          action="primary"
+          onPress={() => { handleSave() }}>
           <ButtonText>{t('button.save')}</ButtonText>
         </Button>
       </Center>

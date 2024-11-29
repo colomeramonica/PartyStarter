@@ -12,8 +12,8 @@ import { useCharacterState } from "../utils/store";
 
 const CharacterForm = () => {
   const { t } = useTranslation();
-  const [classes, setClasses] = useState<{ name: string; description: string }[]>([]);
-  const [races, setRaces] = useState<{ name: string; description: string }[]>([]);
+  const [classes, setClasses] = useState<{ idx: number, name: string }[]>([]);
+  const [races, setRaces] = useState<{ idx: number, name: string }[]>([]);
   const character = useCharacterState((state) => state.character);
   const setCharacter = useCharacterState((state) => state.setCharacter);
 
@@ -58,7 +58,7 @@ const CharacterForm = () => {
         <FormControlLabel>
           <FormControlLabelText className="font-poppins">{t('character.class')}</FormControlLabelText>
         </FormControlLabel>
-        <Select onValueChange={(value) => handleChange("class", value)}>
+        <Select onValueChange={(value) => handleChange("class", classes[parseInt(value)].name)}>
           <SelectTrigger variant="outline" size="md">
             <SelectInput placeholder="Select option" />
             <SelectIcon className="mr-3" as={ChevronDownIcon} />
@@ -69,11 +69,11 @@ const CharacterForm = () => {
               <SelectDragIndicatorWrapper>
                 <SelectDragIndicator />
               </SelectDragIndicatorWrapper>
-              {classes.map((item) => (
+              {classes.map((item, idx) => (
                 <SelectItem
                   label={item.name}
-                  value={item.name}
-                  key={item.name}
+                  value={idx.toString()}
+                  key={idx}
                   className="font-poppins">
                   {item.name}
                 </SelectItem>
@@ -84,9 +84,9 @@ const CharacterForm = () => {
       </FormControl>
       <FormControl className="p-2">
         <FormControlLabel>
-          <FormControlLabelText className="font-poppins">{t('character.class')}</FormControlLabelText>
+          <FormControlLabelText className="font-poppins">{t('character.race')}</FormControlLabelText>
         </FormControlLabel>
-        <Select onValueChange={(value) => handleChange("race", value)}>
+        <Select onValueChange={(value) => handleChange("race", races[parseInt(value)].name)}>
           <SelectTrigger variant="outline" size="md">
             <SelectInput placeholder="Select option" />
             <SelectIcon className="mr-3" as={ChevronDownIcon} />
@@ -97,11 +97,11 @@ const CharacterForm = () => {
               <SelectDragIndicatorWrapper>
                 <SelectDragIndicator />
               </SelectDragIndicatorWrapper>
-              {races.map((item) => (
+              {races.map((item, idx) => (
                 <SelectItem
                   label={item.name}
-                  value={item.name}
-                  key={item.name}
+                  value={idx.toString()}
+                  key={idx}
                   className="font-poppins">
                   {item.name}
                 </SelectItem>
